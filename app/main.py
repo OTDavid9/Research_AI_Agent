@@ -1,7 +1,40 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket
+from app.chat_app.openai_client import LLMClient
+from app.model.chat_schema import ChatRequest, ChatResponse  
 
 app = FastAPI()
+llm = LLMClient()
+
+
+# ------------------------
+# HTTP Endpoint
+# ------------------------
 
 @app.get("/")
-def root():
-    return {"message": "FastAPI running on Render with uv 🚀"}
+async def root():
+    return {"message": "Welcome to the Research AI Agent!"}
+
+@app.post("/chat")
+async def chat(chat_request: ChatRequest):
+    response = llm.chat(session_id=chat_request.session_id, prompt=chat_request.prompt) # type: ignore
+    return ChatResponse(session_id=chat_request.session_id, response=response) # type: ignore
+
+# ------------------------
+# WebSocket Endpoint
+# ------------------------
+@app.websocket("/ws/{session_id}")
+async def websocket_endpoint(websocket: WebSocket, session_id: str = "default"):
+    await websocket.accept()
+
+    while True:
+        try:
+            prompt = await websocket.receive_text()
+
+            response = llm.chat(session_id=session_id, prompt=prompt)
+
+            # send full response (simple version)
+            await websocket.send_text(response)
+
+
+        except Exception as e:
+            await websocket.send_text(f"Error: {str(e)}")
