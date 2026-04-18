@@ -56,6 +56,7 @@ class LLMClient:
         response = client.chat.completions.create(
             model=self.model,
             messages=messages # type: ignore
+            
         )
 
         assistant_message = response.choices[0].message.content
@@ -69,14 +70,32 @@ class LLMClient:
         )
 
         return assistant_message # type: ignore
-#     
     
-# # Example usage
-# if __name__ == "__main__":
-#     llm_client = LLMClient()
-#     result = llm_client.chat("who is the president of the united states?")
-#     print(result)
+    def chat_stream(self, session_id: str, prompt: str):
+        api_key = os.getenv("API_KEY")
 
+        client = OpenAI(
+            base_url=self.base_url,
+            api_key=api_key
+        )
 
+        messages = self._build_messages(session_id, prompt)
 
+        stream = client.chat.completions.create(
+            model=self.model,
+            messages=messages,# type: ignore
+            stream=True        ) # type: ignore
 
+        full_response = ""
+
+        for chunk in stream:
+            token = chunk.choices[0].delta.content
+
+            if token:
+                full_response += token
+                yield token  # 🔥 stream token to frontend
+
+        # store final result AFTER streaming completes
+        self.memory[session_id].append({"role": "user", "content": prompt})
+        self.memory[session_id].append({"role": "assistant", "content": full_response})
+    

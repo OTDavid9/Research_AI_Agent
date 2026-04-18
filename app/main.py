@@ -38,3 +38,21 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str = "default"):
 
         except Exception as e:
             await websocket.send_text(f"Error: {str(e)}")
+
+# @app.websocket("/ws/{session_id}")
+@app.websocket("/ws/stream/{session_id}")
+async def websocket_endpoint_stream(websocket: WebSocket, session_id: str):
+    await websocket.accept()
+
+    while True:
+        try:
+            prompt = await websocket.receive_text()
+
+            for token in llm.chat_stream(session_id, prompt):
+                await websocket.send_text(token)
+
+            # # optional: signal end of message
+            # await websocket.send_text("[DONE]")
+
+        except Exception as e:
+            await websocket.send_text(f"Error: {str(e)}")
