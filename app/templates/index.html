@@ -242,7 +242,8 @@
 </div>
 
 <script>
-  const WS_URL = 'ws://localhost:8000/ws/sss';
+  // const WS_URL = 'ws://localhost:8000/ws/sss';
+  const WS_URL = `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.host}/ws/sss`;
   const RECONNECT_MS = 3000;
 
   let ws = null, isThinking = false, lastBubble = null, msgCount = 0;
