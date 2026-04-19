@@ -1,3 +1,5 @@
+from venv import logger
+
 from openai import OpenAI
 from dotenv import load_dotenv
 import os
@@ -80,6 +82,8 @@ class LLMClient:
 
             # RUN TOOL VIA REGISTRY
             tool_result = self.run_tool(tool_name, tool_args)
+
+            logger.info(f"Tool called: {tool_name} with args {tool_args} returned {tool_result}")
 
             # FEED TOOL RESULT BACK
             messages.append(message)

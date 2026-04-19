@@ -1,4 +1,6 @@
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, WebSocket, Request
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
 from app.chat_app.openai_client import LLMClient
 from app.model.chat_schema import ChatRequest, ChatResponse  
 
@@ -10,9 +12,18 @@ llm = LLMClient()
 # HTTP Endpoint
 # ------------------------
 
-@app.get("/")
-async def root():
-    return {"message": "Welcome to the Research AI Agent!"}
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+templates = Jinja2Templates(directory=BASE_DIR.parent / "app/templates")
+
+@app.get("/", response_class=HTMLResponse)
+async def root(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="index.html",
+        context={}
+    )
 
 @app.post("/chat")
 async def chat(chat_request: ChatRequest):
@@ -55,4 +66,4 @@ async def websocket_endpoint_stream(websocket: WebSocket, session_id: str):
             # await websocket.send_text("[DONE]")
 
         except Exception as e:
-            await websocket.send_text(f"Error: {str(e)}")
+            await websocket.send_text(f"Error: {str(e)}") 

@@ -1,3 +1,5 @@
+from venv import logger
+
 import requests
 import time
 import io
@@ -166,6 +168,10 @@ def search_research_papers(query: str, min_results: int = 1):
 
     if len(dataset) == 0:
         raise Exception("❌ No valid papers retrieved")
+    
+    logger.info(f"🎉 Successfully retrieved {dataset} papers for query: '{query}'")
+
+    print(f"\n🎉 Completed: Retrieved {dataset} papers for query: '{query}'")
 
     return dataset
 
