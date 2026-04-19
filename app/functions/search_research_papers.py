@@ -80,7 +80,7 @@ def extract_pdf_from_url(url: str) -> str:
 # -----------------------------
 # MAIN PIPELINE (PARALLEL + MEMORY ONLY)
 # -----------------------------
-def search_research_papers(query: str, min_results: int = 1):
+def search_research_papers(query: str, min_results: int = 3)-> List[Dict[str, str]]:
 
     client = SemanticScholarClient()
     dataset = []

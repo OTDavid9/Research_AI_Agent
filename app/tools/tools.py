@@ -38,11 +38,10 @@ tools =  [
                     },
                     "min_results": {
                         "type": "integer",
-                        "default": 3,
                         "description": "Minimum number of papers to retrieve"
                     }
                 },
-                "required": ["query"]
+                "required": ["query", "min_results"],
             }
         }
     }
