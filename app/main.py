@@ -39,6 +39,7 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str = "default"):
         except Exception as e:
             await websocket.send_text(f"Error: {str(e)}")
 
+
 @app.websocket("/ws/stream/{session_id}")
 async def websocket_endpoint_stream(websocket: WebSocket, session_id: str):
     await websocket.accept()
