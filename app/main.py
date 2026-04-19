@@ -41,7 +41,11 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str = "default"):
         try:
             prompt = await websocket.receive_text()
 
+            print(f"Received prompt for session '{session_id}': {prompt}")  # DEBUG LINE
+
             response = llm.chat(session_id=session_id, prompt=prompt)
+
+            print(f"Generated response for session '{session_id}': {response}")  # DEBUG LINE
 
             # send full response (simple version)
             await websocket.send_text(response)
